@@ -1,22 +1,9 @@
-# MSDS 458 Bird Classification
-
-<div class="cell markdown" id="g23QPInFcsbC">
-
 # Kevin Tong - Bird Image Classification
-
-</div>
-
-<div class="cell markdown" id="Qvl4h-BZZA6-">
 
 # Packages
 
-</div>
 
-<div class="cell code" execution_count="1"
-executionInfo="{&quot;elapsed&quot;:9894,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692593458365,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="488m6E5qYX0e">
-
-``` python
+```python
 import datetime
 import time
 from packaging import version
@@ -54,32 +41,17 @@ from PIL import Image
 from tensorflow.keras.regularizers import l2
 ```
 
-</div>
 
-<div class="cell code" execution_count="2"
-executionInfo="{&quot;elapsed&quot;:2,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692593458365,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="XUE9jE77ZQ1w">
-
-``` python
+```python
 # from google.colab import drive
 # drive.mount('/content/drive')
 data_dir = '/content/drive/MyDrive/Northwestern MSDS/MSDS 458/458_Final_Notebooks/spectrogram_output'
 ```
 
-</div>
-
-<div class="cell markdown" id="HyKMQxD2dOW_">
-
 # Preprocessing
 
-</div>
 
-<div class="cell code" execution_count="3"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}"
-executionInfo="{&quot;elapsed&quot;:883753,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692594342117,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="B229odF8eHLO" outputId="e6284bfe-fc8a-4ca0-f5d0-b8d01eb44868">
-
-``` python
+```python
 # Initialize a set to store unique classes (bird species)
 unique_classes = set()
 
@@ -113,20 +85,11 @@ num_classes = len(unique_classes)
 print("Number of classes:", num_classes)
 ```
 
-<div class="output stream stdout">
-
     Number of classes: 110
 
-</div>
 
-</div>
 
-<div class="cell code" execution_count="4"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}"
-executionInfo="{&quot;elapsed&quot;:3,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692594342117,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="QcOLzGuAf6Aw" outputId="eaf19a2f-0172-419e-a8d1-5b3a3de3a625">
-
-``` python
+```python
 # Load and preprocess labels
 all_labels = []
 for bird_folder in os.listdir(data_dir):
@@ -145,20 +108,12 @@ onehot_encoder = OneHotEncoder(sparse=False)
 encoded_labels = onehot_encoder.fit_transform(integer_encoded.reshape(-1, 1))
 ```
 
-<div class="output stream stderr">
-
     /usr/local/lib/python3.10/dist-packages/sklearn/preprocessing/_encoders.py:868: FutureWarning: `sparse` was renamed to `sparse_output` in version 1.2 and will be removed in 1.4. `sparse_output` is ignored unless you leave `sparse` to its default value.
       warnings.warn(
 
-</div>
 
-</div>
 
-<div class="cell code" execution_count="5"
-executionInfo="{&quot;elapsed&quot;:1172,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692594343287,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="nLFZ8OL2Y4nK">
-
-``` python
+```python
 from sklearn.model_selection import train_test_split
 
 # Split data into training and temporary set (which includes validation and test data)
@@ -166,42 +121,25 @@ train_images, temp_images, train_labels, temp_labels = train_test_split(all_imag
 
 # Split temporary set into validation and test sets
 val_images, test_images, val_labels, test_labels = train_test_split(temp_images, temp_labels, test_size=0.5, random_state=42)
+
 ```
 
-</div>
 
-<div class="cell code" execution_count="6"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}"
-executionInfo="{&quot;elapsed&quot;:3,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692594343288,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="QWtGgvJSY58c" outputId="d39aa12b-13bb-4f65-8495-15f6b0cd686f">
-
-``` python
+```python
 print("Train images shape:", train_images.shape)
 print("Validation images shape:", val_images.shape)
 print("Test images shape:", test_images.shape)
 ```
 
-<div class="output stream stdout">
-
     Train images shape: (1725, 224, 224, 3)
     Validation images shape: (216, 224, 224, 3)
     Test images shape: (216, 224, 224, 3)
 
-</div>
-
-</div>
-
-<div class="cell markdown" id="1d-toRWpdoPg">
 
 # Neural Network
 
-</div>
 
-<div class="cell code" execution_count="7"
-executionInfo="{&quot;elapsed&quot;:3458,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692594346745,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="Obdl6bRidqy7">
-
-``` python
+```python
 start_time = time.time()
 
 # Define your CNN model with Conv2D and Dropout layers
@@ -234,19 +172,11 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 ```
 
-</div>
 
-<div class="cell code" execution_count="8"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}"
-executionInfo="{&quot;elapsed&quot;:6,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692594346745,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="aExSOdFWi9Ma" outputId="3f204c06-5123-46ef-e470-62247830ecf5">
-
-``` python
+```python
 # Print the model summary
 model.summary()
 ```
-
-<div class="output stream stdout">
 
     Model: "sequential"
     _________________________________________________________________
@@ -288,16 +218,9 @@ model.summary()
     Non-trainable params: 0
     _________________________________________________________________
 
-</div>
 
-</div>
 
-<div class="cell code" execution_count="9"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}"
-executionInfo="{&quot;elapsed&quot;:86701,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692594433444,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="ghQc7tnPi_Xt" outputId="81a9a168-c9c9-4685-a0e6-a87327b81863">
-
-``` python
+```python
 # Train the model
 history = model.fit(train_images, train_labels, epochs=200, batch_size=64,
                     validation_data=(val_images, val_labels),callbacks=[
@@ -309,8 +232,6 @@ history = model.fit(train_images, train_labels, epochs=200, batch_size=64,
 test_loss, test_acc = model.evaluate(test_images, test_labels)
 print('Test accuracy:', test_acc)
 ```
-
-<div class="output stream stdout">
 
     Epoch 1/200
     27/27 [==============================] - 18s 156ms/step - loss: 4.6913 - accuracy: 0.0145 - val_loss: 4.6487 - val_accuracy: 0.0324
@@ -351,35 +272,19 @@ print('Test accuracy:', test_acc)
     7/7 [==============================] - 0s 22ms/step - loss: 2.1316 - accuracy: 0.6574
     Test accuracy: 0.6574074029922485
 
-</div>
 
-</div>
 
-<div class="cell code" execution_count="10"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}"
-executionInfo="{&quot;elapsed&quot;:297,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692594433740,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="bkiBQKo336Pe" outputId="2ad97837-b3fa-409a-dd96-ad9daaff0c37">
-
-``` python
+```python
 end_time = time.time()
 runtime = end_time - start_time
 print('Total runtime:', runtime, 'seconds')
 ```
 
-<div class="output stream stdout">
-
     Total runtime: 90.39768433570862 seconds
 
-</div>
 
-</div>
 
-<div class="cell code" execution_count="11"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:472}"
-executionInfo="{&quot;elapsed&quot;:402,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692594434141,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="Bvwm5VwVp9TD" outputId="db723ccd-8aa8-46ce-d8ea-806c631f4c2d">
-
-``` python
+```python
 # Plot training and validation accuracy
 plt.plot(history.history['accuracy'], label='Train Accuracy')
 plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
@@ -390,20 +295,14 @@ plt.legend()
 plt.show()
 ```
 
-<div class="output display_data">
 
-![](9005ea7d1b273e697ebe6bac98bbc900e97c8949.png)
+    
+![png](CNN_V6_MSDS_458_Image_Classification_NN_files/CNN_V6_MSDS_458_Image_Classification_NN_14_0.png)
+    
 
-</div>
 
-</div>
 
-<div class="cell code" execution_count="12"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:472}"
-executionInfo="{&quot;elapsed&quot;:298,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1692594434437,&quot;user&quot;:{&quot;displayName&quot;:&quot;Kevin Tong&quot;,&quot;userId&quot;:&quot;02567103695429705615&quot;},&quot;user_tz&quot;:420}"
-id="LnoPC7t7sJ0C" outputId="70008507-36b0-49f5-bb42-de68d02cfc75">
-
-``` python
+```python
 # Plot test accuracy
 plt.plot(history.history['accuracy'], label='Train Accuracy')
 plt.plot(len(history.history['val_accuracy']), test_acc, 'ro', label='Test Accuracy')
@@ -414,10 +313,8 @@ plt.legend()
 plt.show()
 ```
 
-<div class="output display_data">
 
-![](aae8f6eae583a5847587e370c4b68e7085baefd2.png)
+    
+![png](CNN_V6_MSDS_458_Image_Classification_NN_files/CNN_V6_MSDS_458_Image_Classification_NN_15_0.png)
+    
 
-</div>
-
-</div>
