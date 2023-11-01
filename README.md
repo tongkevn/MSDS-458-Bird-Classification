@@ -297,7 +297,7 @@ plt.show()
 
 
     
-![png](CNN_V6_MSDS_458_Image_Classification_NN_files/CNN_V6_MSDS_458_Image_Classification_NN_14_0.png)
+![image](https://github.com/tongkevn/MSDS-458-Bird-Classification/blob/19bfb7dc60b381db5793135404ccc66f4b89847a/CNN_V6_MSDS_458_Image_Classification_NN_files/CNN_V6_MSDS_458_Image_Classification_NN_14_0.png)
     
 
 
